@@ -289,4 +289,4 @@ qq-bridge-launcher/
 
 ## License
 
-本项目**代码**以 [MIT](LICENSE) 发布。`assets/preview.png` / `assets/icon.ico` 是项目自带的图片素材，不属于 MIT 授权范围；若你二次分发，请自行确认该图片的授权情况。
+本项目以 [MIT](LICENSE) 发布。
