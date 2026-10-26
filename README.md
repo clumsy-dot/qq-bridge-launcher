@@ -211,6 +211,9 @@ SnowLuma 的 OneBot 端口没起来（见上一条）。本工具每次启动都
 **Q: DSH 重启后桥接连不上（`事件流中断: fetch failed`）**
 DSH 换了随机端口。重跑 `start.bat` 即可自动同步。
 
+**Q: 桥接日志出现 `设置会话模型失败 … session/model-unavailable`**
+桥接配置里的 `dsh.provider` / `dsh.model` 在 DSH 里不可用。把 `<qq-bridge>/config.json` 的 `dsh.provider` 改成 DSH 当前 profile 的 provider（桌面版常见是 `deepseek-account`）、`dsh.model` 改成可用模型，然后重启桥接（桌面图标 → 选 `1`，或控制台）。
+
 **Q: 启动 DSH 报 `cannot resolve profile bundle`**
 这是 qq-bridge 的 DSH 端安装问题，与本工具无关。按 qq-bridge 文档执行 `dsh plugin --profile <profile> install` 后重启 DSH。
 
