@@ -62,13 +62,14 @@ node src/cli.cjs --dry-run
 git clone https://github.com/clumsy-dot/qq-bridge-launcher.git qq-bridge-launcher
 cd qq-bridge-launcher
 
-:: 2. 首次配置（也可以直接双击 setup.bat）
+:: 2. 首次配置（也可以直接双击 setup.bat；完成后会自动创建桌面图标）
 node src/cli.cjs --init
 
 :: 3. 先预演一遍，确认会改哪些文件（不会写入、不会启动）
 node src/cli.cjs --dry-run
 
-:: 4. 一键启动（也可以直接双击 start.bat）
+:: 4. 启动：双击桌面「QQ 桥接」图标 → 选 1
+::    或者直接跑（不开菜单）
 node src/cli.cjs
 ```
 
@@ -86,32 +87,47 @@ node src/cli.cjs
 
 ## 使用方式
 
+> 桌面只有一个图标：**`QQ 桥接`**。双击它进入菜单，菜单里做所有事。
+
 ### 第一次使用
 
 1. 装好 Node.js 18+（建议 22+），以及前置条件里的 QQ / SnowLuma / DSH / qq-bridge
 2. 把本仓库克隆到任意目录（路径别含空格）
 3. 双击 **`setup.bat`**，逐项回车确认自动探测到的路径；想固定接入某个 QQ 就填号码
-4. （建议）跑一次 `node src/cli.cjs --dry-run`，先看清楚会改动哪些文件
-5. 双击 **`start.bat`** 正式启动
+   - 配置完成后，**会自动在你的桌面创建一个「QQ 桥接」图标**
+4. 双击桌面上的 **「QQ 桥接」** → 选 `1` 启动
 
-### 以后每次（比如开机之后）
+### 桌面图标（自动创建）
 
-**双击 `start.bat` 就行。** 它会按依赖顺序补齐：
+| 菜单项 | 作用 |
+| --- | --- |
+| `1` 启动 | 按顺序补齐 DSH → QQ → SnowLuma（自动注入）→ qq-bridge，并同步 DSH 端口、钉住账号 |
+| `2` 切换接入的 QQ 账号 | 列出所有已注入账号，输入 QQ 号或序号即可切换 |
+| `3` 预演 | 只打印会修改哪些文件，不写入、不启动 |
+| `4` 重建桌面快捷方式 | 图标误删/换目录后用它恢复 |
+| `0` 退出 | 什么都不做 |
+
+菜单长这样（直接回车 = 启动）：
 
 ```
-DSH 桌面端 → QQ 客户端 → SnowLuma（自动注入）→ qq-bridge（自动同步 DSH 端口、钉住账号）
+=== QQ 桥接启动器 ===
+  1) 启动（使用上次选择/配置的账号）  ← 直接回车
+  2) 切换接入的 QQ 账号
+  3) 预演：查看会修改哪些文件（不写入）
+  4) 重建桌面快捷方式
+  0) 退出
+
+请选择 [1]:
 ```
 
 - 成功标志：最后打印 `全部就绪：<QQ号> 已接入，现在可以在 QQ 上给机器人发消息了。`
-- **弹出的窗口不要关**：
-  - `start.bat` 是桥接的守护窗口，关了桥接就停了（5 秒自动重启机制也依赖它）
-  - SnowLuma / QQ 的窗口同理
-  - 启动脚本自己的窗口会停在「你可以关闭此窗口」，关掉它不影响后台组件
+- **弹出的窗口不要关**：桥接的守护窗口关了桥接就停（5 秒自动重启机制也依赖它）；SnowLuma / QQ 的窗口同理
 - 如果 QQ 客户端自己重启过导致 Hook 失效，工具会检测到并自动重启 SnowLuma
+- 想不开菜单直接启动（例如做计划任务/脚本调用）就用 `start.bat`
 
 ### 换接入的 QQ 账号
 
-双击 **`select-account.bat`**，按提示输入 QQ 号（或列表序号），确认后会自动改配置并重启桥接：
+桌面图标 → 选 `2`，按提示输入 QQ 号（或列表序号），确认后会自动改配置并重启桥接：
 
 ```
 检测到以下 QQ 账号：
@@ -122,15 +138,11 @@ DSH 桌面端 → QQ 客户端 → SnowLuma（自动注入）→ qq-bridge（自
 请输入要接入桥接的 QQ 号（直接回车 = 123456789）：
 ```
 
-### 放到桌面（可选）
-
-`start.bat` / `select-account.bat` 右键 → **发送到 → 桌面快捷方式**；再右键快捷方式 → 属性 → **更改图标** → 选 `assets\icon.ico`。
-
 ### 想确认它在干什么
 
 | 想知道 | 看哪里 |
 | --- | --- |
-| 这次会改什么（不改任何东西） | `node src/cli.cjs --dry-run` |
+| 这次会改什么（不改任何东西） | 桌面图标 → `3`；或 `node src/cli.cjs --dry-run` |
 | 有哪些账号可用 | `node src/cli.cjs --list` |
 | 桥接当前状态 | 控制台 http://127.0.0.1:3100 |
 | 连接/报错日志 | `<qq-bridge>\state\bridge.log` |
@@ -140,11 +152,13 @@ DSH 桌面端 → QQ 客户端 → SnowLuma（自动注入）→ qq-bridge（自
 
 | 操作 | 双击 | 命令行 |
 | --- | --- | --- |
+| 打开菜单（桌面图标指向它） | `launcher.bat` | `node src/cli.cjs --menu` |
 | 一键启动（使用上次选的账号） | `start.bat` | `node src/cli.cjs` |
-| 预演：只看会改哪些文件 | — | `node src/cli.cjs --dry-run` |
-| 切换接入的 QQ 账号 | `select-account.bat` | `node src/cli.cjs --ask` |
+| 预演：只看会改哪些文件 | 菜单选 `3` | `node src/cli.cjs --dry-run` |
+| 切换接入的 QQ 账号 | 菜单选 `2` | `node src/cli.cjs --ask` |
 | 指定 QQ 号启动 | — | `node src/cli.cjs --qq 123456789` |
 | 列出 SnowLuma 里已接入的账号 | — | `node src/cli.cjs --list` |
+| 重建桌面图标 | 菜单选 `4` | `node src/cli.cjs --install-shortcuts` |
 | 修改安装路径 | `setup.bat` | `node src/cli.cjs --init` |
 
 选择账号时的界面：
@@ -233,7 +247,7 @@ DSH 换了随机端口。重跑 `start.bat` 即可自动同步。
 - qq-bridge 源码（`src/*`、`start.bat` 等）
 - QQ 客户端
 - `%USERPROFILE%\.dsh` 下的 profile 与凭据（DSH 端的 preset / MCP 安装需要按 qq-bridge 的 `setup-dsh.mjs` 自行执行，本工具不代跑，避免擅自改你的 DSH 配置）
-- 桌面快捷方式（本工具只提供 `start.bat` / `setup.bat` / `select-account.bat`，快捷方式由用户自己创建）
+- 桌面快捷方式（本工具会**在桌面创建/更新一个**「QQ 桥接」图标；除此之外不改动你的其它快捷方式）
 
 > 工具只操作本地进程、端口和上述配置文件，不联网、不上传任何数据。
 
@@ -241,16 +255,18 @@ DSH 换了随机端口。重跑 `start.bat` 即可自动同步。
 
 ```
 qq-bridge-launcher/
-├─ start.bat              # 一键启动
-├─ setup.bat              # 首次配置向导
-├─ select-account.bat     # 切换接入的 QQ 账号
+├─ launcher.bat           # 桌面图标指向它：交互式菜单
+├─ start.bat              # 直接启动（不开菜单）
+├─ setup.bat              # 首次配置向导（完成后自动创建桌面图标）
+├─ select-account.bat     # 直接换账号（不开菜单）
 ├─ config.example.json    # 配置模板（不含任何真实路径/QQ 号）
 ├─ assets/
 │  ├─ preview.png         # README 顶部展示图（384×384 原图）
 │  └─ icon.ico            # Windows 图标（16~256 多尺寸，由原图直接生成）
 ├─ src/
-│  ├─ cli.cjs             # 入口 & 编排
+│  ├─ cli.cjs             # 入口 & 编排 & 交互菜单
 │  ├─ config.cjs          # 配置读写 / 首次向导 / 路径自动探测
+│  ├─ shortcut.cjs        # 桌面快捷方式创建/更新（单一图标）
 │  ├─ dsh.cjs             # DSH 进程与随机端口发现
 │  ├─ snowluma.cjs        # 账号发现 / 端口分配 / hookAutoLoad / 启停
 │  ├─ bridge.cjs          # 桥接配置改写 / 账号钉定 / 重启 / 日志状态

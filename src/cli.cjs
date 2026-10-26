@@ -28,19 +28,31 @@ const configModule = require('./config.cjs');
 const dsh = require('./dsh.cjs');
 const snowluma = require('./snowluma.cjs');
 const bridge = require('./bridge.cjs');
+const shortcut = require('./shortcut.cjs');
 
 const TOTAL_STEPS = 6;
 
 // ── 命令行 ──────────────────────────────────────────────────────────────────
 
 function parseArgs(argv) {
-  const args = { init: false, ask: false, list: false, help: false, dryRun: false, qq: '' };
+  const args = {
+    init: false,
+    ask: false,
+    list: false,
+    help: false,
+    dryRun: false,
+    installShortcuts: false,
+    menu: false,
+    qq: '',
+  };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === '--init') args.init = true;
     else if (arg === '--ask') args.ask = true;
     else if (arg === '--list') args.list = true;
     else if (arg === '--dry-run') args.dryRun = true;
+    else if (arg === '--install-shortcuts') args.installShortcuts = true;
+    else if (arg === '--menu') args.menu = true;
     else if (arg === '--help' || arg === '-h') args.help = true;
     else if (arg === '--qq') {
       args.qq = String(argv[i + 1] || '').trim();
@@ -54,17 +66,46 @@ function printHelp() {
   console.log(`
 用法：node src/cli.cjs [选项]
 
-  （无参数）        一键启动整条链路
-  --init            首次运行配置向导
-  --ask             强制重新选择要接入的 QQ 账号
-  --qq <QQ号>       指定要接入的 QQ 账号
-  --list            列出 SnowLuma 里已接入的账号
-  --dry-run         预演：只打印「将修改哪些文件/启动哪些程序」，不写入、不启动
-  -h, --help        显示本帮助
+  （无参数）          一键启动整条链路
+  --init              首次运行配置向导（完成后会自动创建桌面快捷方式）
+  --install-shortcuts 在桌面创建/重建快捷方式
+  --menu              交互式菜单（桌面上那个图标用的就是它）
+  --ask               强制重新选择要接入的 QQ 账号
+  --qq <QQ号>         指定要接入的 QQ 账号
+  --list              列出 SnowLuma 里已接入的账号
+  --dry-run           预演：只打印「将修改哪些文件/启动哪些程序」，不写入、不启动
+  -h, --help          显示本帮助
 
 注意：正式运行会改写 qq-bridge 与 SnowLuma 的配置文件（详见 README「部署时会修改什么」）。
 建议首次部署先执行一次 --dry-run 看清楚。
 `);
+}
+
+/**
+ * 桌面单一图标用的交互式菜单。
+ * 非交互环境（stdin 不是终端）返回 null，调用方按默认「直接启动」继续。
+ */
+function showMenu() {
+  if (!process.stdin.isTTY) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    console.log('');
+    console.log(c.bold('=== QQ 桥接启动器 ==='));
+    console.log(`  ${c.cyan('1')}) 启动（使用上次选择/配置的账号）  ${c.dim('← 直接回车')}`);
+    console.log(`  ${c.cyan('2')}) 切换接入的 QQ 账号`);
+    console.log(`  ${c.cyan('3')}) 预演：查看会修改哪些文件（不写入）`);
+    console.log(`  ${c.cyan('4')}) 重建桌面快捷方式`);
+    console.log(`  ${c.cyan('0')}) 退出`);
+    rl.question('\n请选择 [1]: ', (answer) => {
+      rl.close();
+      const text = answer.trim();
+      if (text === '0') return resolve('exit');
+      if (text === '2') return resolve('ask');
+      if (text === '3') return resolve('dry');
+      if (text === '4') return resolve('shortcuts');
+      resolve('start');
+    });
+  });
 }
 
 // ── QQ 客户端 ───────────────────────────────────────────────────────────────
@@ -164,19 +205,43 @@ async function main() {
     return 0;
   }
 
+  // 桌面单一图标：先给菜单，选完再继续（非交互环境自动按「直接启动」处理）
+  if (args.menu) {
+    const choice = await showMenu();
+    if (choice === 'exit') return 0;
+    if (choice === 'shortcuts') {
+      shortcut.install(configModule.ROOT);
+      return 0;
+    }
+    if (choice === 'ask') args.ask = true;
+    if (choice === 'dry') args.dryRun = true;
+  }
+
   // dry-run 只读预演：不写文件、不启动/重启任何程序
   runtime.dryRun = args.dryRun === true;
+
+  if (args.installShortcuts) {
+    if (runtime.dryRun) {
+      console.log('（dry-run）将创建桌面快捷方式：QQ 桥接（单一图标）');
+      return 0;
+    }
+    const created = shortcut.install(configModule.ROOT);
+    return created.length ? 0 : 1;
+  }
 
   if (args.init) {
     if (runtime.dryRun) {
       const detected = configModule.detectAll();
-      console.log('（dry-run）自动探测结果（不会写入 config.json）：');
+      console.log('（dry-run）自动探测结果（不会写入 config.json、不会创建桌面快捷方式）：');
       Object.entries(detected).forEach(([key, value]) => console.log(`  ${key.padEnd(9)}: ${value || '(未探测到，需要手动填写)'}`));
       return 0;
     }
     try {
       const { problems } = await configModule.runWizard();
-      return problems.length ? 1 : 0;
+      if (problems.length) return 1;
+      // 配置成功后顺手在桌面建好快捷方式（失败不影响配置结果）
+      shortcut.install(configModule.ROOT);
+      return 0;
     } catch (error) {
       log.warn(String(error?.message || error));
       return 1;
