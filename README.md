@@ -59,7 +59,7 @@ node src/cli.cjs --dry-run
 
 ```bat
 :: 1. 克隆到任意目录（建议路径不含空格）
-git clone https://github.com/<你的用户名>/qq-bridge-launcher.git qq-bridge-launcher
+git clone https://github.com/clumsy-dot/qq-bridge-launcher.git qq-bridge-launcher
 cd qq-bridge-launcher
 
 :: 2. 首次配置（也可以直接双击 setup.bat）
@@ -83,6 +83,58 @@ node src/cli.cjs
 ```
 
 配置写入 `config.json`（**已被 .gitignore 排除**，不要提交）。
+
+## 使用方式
+
+### 第一次使用
+
+1. 装好 Node.js 18+（建议 22+），以及前置条件里的 QQ / SnowLuma / DSH / qq-bridge
+2. 把本仓库克隆到任意目录（路径别含空格）
+3. 双击 **`setup.bat`**，逐项回车确认自动探测到的路径；想固定接入某个 QQ 就填号码
+4. （建议）跑一次 `node src/cli.cjs --dry-run`，先看清楚会改动哪些文件
+5. 双击 **`start.bat`** 正式启动
+
+### 以后每次（比如开机之后）
+
+**双击 `start.bat` 就行。** 它会按依赖顺序补齐：
+
+```
+DSH 桌面端 → QQ 客户端 → SnowLuma（自动注入）→ qq-bridge（自动同步 DSH 端口、钉住账号）
+```
+
+- 成功标志：最后打印 `全部就绪：<QQ号> 已接入，现在可以在 QQ 上给机器人发消息了。`
+- **弹出的窗口不要关**：
+  - `start.bat` 是桥接的守护窗口，关了桥接就停了（5 秒自动重启机制也依赖它）
+  - SnowLuma / QQ 的窗口同理
+  - 启动脚本自己的窗口会停在「你可以关闭此窗口」，关掉它不影响后台组件
+- 如果 QQ 客户端自己重启过导致 Hook 失效，工具会检测到并自动重启 SnowLuma
+
+### 换接入的 QQ 账号
+
+双击 **`select-account.bat`**，按提示输入 QQ 号（或列表序号），确认后会自动改配置并重启桥接：
+
+```
+检测到以下 QQ 账号：
+  1) 123456789   OneBot HTTP 3000 / WS 3001
+  2) 987654321   OneBot HTTP 3010 / WS 3011
+  0) 取消
+
+请输入要接入桥接的 QQ 号（直接回车 = 123456789）：
+```
+
+### 放到桌面（可选）
+
+`start.bat` / `select-account.bat` 右键 → **发送到 → 桌面快捷方式**；再右键快捷方式 → 属性 → **更改图标** → 选 `assets\icon.ico`。
+
+### 想确认它在干什么
+
+| 想知道 | 看哪里 |
+| --- | --- |
+| 这次会改什么（不改任何东西） | `node src/cli.cjs --dry-run` |
+| 有哪些账号可用 | `node src/cli.cjs --list` |
+| 桥接当前状态 | 控制台 http://127.0.0.1:3100 |
+| 连接/报错日志 | `<qq-bridge>\state\bridge.log` |
+| SnowLuma 注入情况 | `<SnowLuma>\logs\snowluma-<日期>.log` 里的 `[Hook]` 行 |
 
 ## 日常使用
 
