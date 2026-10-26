@@ -32,6 +32,8 @@ A tiny Windows launcher that boots the whole `QQ → SnowLuma → DeepSeek Harne
 | qq-bridge | `config.json` | `dsh.baseUrl`、`dsh.authToken`、`snowluma.{wsUrl,httpUrl,accessToken,followDiscoveredEndpoint,homeDir}` |
 | qq-bridge | `state/active-qq.txt` | 当前接入的 QQ 号 |
 
+> 上表只列出**字段名**，不含任何实际值：token、真实 QQ 号、本机路径都不会出现在本仓库里（`<QQ号>` 是占位符）。
+
 保障措施：
 
 - **只在值不同时才写**（幂等，重复运行不会反复改动）
