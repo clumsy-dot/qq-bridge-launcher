@@ -192,8 +192,8 @@ qq-bridge-launcher/
 ├─ select-account.bat     # 切换接入的 QQ 账号
 ├─ config.example.json    # 配置模板（不含任何真实路径/QQ 号）
 ├─ assets/
-│  ├─ icon.png            # 应用图标（512×512，透明背景）
-│  └─ icon.ico            # Windows 图标（16~256 多尺寸）
+│  ├─ icon.png            # 项目图标原图（384×384）
+│  └─ icon.ico            # Windows 图标（16~256 多尺寸，由原图直接生成）
 ├─ src/
 │  ├─ cli.cjs             # 入口 & 编排
 │  ├─ config.cjs          # 配置读写 / 首次向导 / 路径自动探测
@@ -223,4 +223,4 @@ qq-bridge-launcher/
 
 ## License
 
-本项目代码以 [MIT](LICENSE) 发布。`assets/icon.png` 与 `assets/icon.ico` 是本项目原创绘制的图标，同样以 MIT 授权。
+本项目**代码**以 [MIT](LICENSE) 发布。`assets/icon.png` / `assets/icon.ico` 是项目自带的图片素材，不属于 MIT 授权范围；若你二次分发，请自行确认该图片的授权情况。

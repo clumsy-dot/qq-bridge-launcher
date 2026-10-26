@@ -4,9 +4,6 @@ config.json
 # 本机路径清单（只在本地参考）
 LOCAL_PATHS.md
 
-# 本地个人图标（来源/授权不明，不随仓库分发；仓库用的是原创 icon.*）
-assets/personal-icon.*
-
 # 运行时状态（当前账号选择等）
 state/
 
