@@ -1,6 +1,6 @@
 # qq-bridge-launcher
 
-<p align="center"><img src="assets/icon.png" width="140" alt="icon"></p>
+<p align="center"><img src="assets/preview.png" width="140" alt="icon"></p>
 
 > Windows 上把 **QQ → SnowLuma → DeepSeek Harness → qq-bridge** 这条链路一键拉起来的小工具，支持多 QQ 账号、自动分配 OneBot 端口、自动处理 DSH 随机端口。
 
@@ -192,7 +192,7 @@ qq-bridge-launcher/
 ├─ select-account.bat     # 切换接入的 QQ 账号
 ├─ config.example.json    # 配置模板（不含任何真实路径/QQ 号）
 ├─ assets/
-│  ├─ icon.png            # 项目图标原图（384×384）
+│  ├─ preview.png         # README 顶部展示图（384×384 原图）
 │  └─ icon.ico            # Windows 图标（16~256 多尺寸，由原图直接生成）
 ├─ src/
 │  ├─ cli.cjs             # 入口 & 编排
@@ -223,4 +223,4 @@ qq-bridge-launcher/
 
 ## License
 
-本项目**代码**以 [MIT](LICENSE) 发布。`assets/icon.png` / `assets/icon.ico` 是项目自带的图片素材，不属于 MIT 授权范围；若你二次分发，请自行确认该图片的授权情况。
+本项目**代码**以 [MIT](LICENSE) 发布。`assets/preview.png` / `assets/icon.ico` 是项目自带的图片素材，不属于 MIT 授权范围；若你二次分发，请自行确认该图片的授权情况。
