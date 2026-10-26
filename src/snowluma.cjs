@@ -30,6 +30,16 @@ const configDir = (snowlumaDir) => path.join(snowlumaDir, 'config');
 const oneBotFile = (snowlumaDir, uin) => path.join(configDir(snowlumaDir), `onebot_${uin}.json`);
 const runtimeFile = (snowlumaDir) => path.join(configDir(snowlumaDir), 'runtime.json');
 
+/** SnowLuma WebUI 端口（默认 5099，可在 runtime.json 改）。 */
+function webuiPort(snowlumaDir) {
+  try {
+    const port = Number(readJson(runtimeFile(snowlumaDir)).webuiPort);
+    return Number.isInteger(port) && port > 0 ? port : 5099;
+  } catch {
+    return 5099;
+  }
+}
+
 /** 读取 SnowLuma 里所有曾接入过的 QQ 账号（来自 onebot_<uin>.json）。 */
 function discoverAccounts(snowlumaDir) {
   let names = [];
@@ -210,6 +220,7 @@ module.exports = {
   configDir,
   oneBotFile,
   runtimeFile,
+  webuiPort,
   discoverAccounts,
   assignAccountPorts,
   ensureHookAutoLoad,

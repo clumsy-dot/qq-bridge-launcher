@@ -8,5 +8,9 @@
   "defaults": {
     "qqNumber": "",
     "portBase": 3000
+  },
+  "snowlumaWebui": {
+    "password": "",
+    "unloadOtherAccounts": true
   }
 }

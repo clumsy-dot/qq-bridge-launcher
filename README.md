@@ -81,6 +81,7 @@ node src/cli.cjs
 1. 装好 Node.js 18+（建议 22+），以及前置条件里的 QQ / SnowLuma / DSH / qq-bridge
 2. 把本仓库克隆到任意目录（路径别含空格）
 3. 双击 **`setup.bat`**，逐项回车确认自动探测到的路径；想固定接入某个 QQ 就填号码
+   - 第 ⑥ 项是**可选的 SnowLuma WebUI 密码**：填了之后，启动时会自动卸载其它 QQ 账号的 Hook 注入（只保留你要接入的那个号）
    - 配置完成后，**会自动在你的桌面创建一个「大肥鱼启动器」图标**
 4. 双击桌面上的 **「大肥鱼启动器」** → 选 `1` 启动
 
@@ -203,6 +204,11 @@ DSH 换了随机端口。重跑 `start.bat` 即可自动同步。
 
 **Q: 启动 DSH 报 `cannot resolve profile bundle`**
 这是 qq-bridge 的 DSH 端安装问题，与本工具无关。按 qq-bridge 文档执行 `dsh plugin --profile <profile> install` 后重启 DSH。
+
+**Q: SnowLuma 面板里每次都有另一个 QQ 号的注入**
+SnowLuma 的 hookAutoLoad 会注入**所有发现的 QQ 进程**，而多账号登录时本机就有多个 QQ 进程。
+解决办法：启动器在配置了 SnowLuma WebUI 密码后会**自动卸载非目标账号的注入**（config.json 的 snowlumaWebui.password；在 setup.bat 第 ⑥ 项填写）。
+注意：SnowLuma 重启后会自动重新注入，所以每次启动都要做一遍 —— 启动器已经自动处理了。
 
 **Q: 一个桥接实例能同时接多个 QQ 账号吗？**
 不能，SnowLuma 的 OneBot 端点是一对一的。要同时跑两个机器人，需要两个桥接实例（各自独立的 `consolePort`、`state` 和工作目录），本工具目前按"一次接入一个账号"设计。

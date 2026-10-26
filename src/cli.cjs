@@ -27,6 +27,7 @@ const {
 const configModule = require('./config.cjs');
 const dsh = require('./dsh.cjs');
 const snowluma = require('./snowluma.cjs');
+const snowlumaWebui = require('./snowluma-webui.cjs');
 const bridge = require('./bridge.cjs');
 const shortcut = require('./shortcut.cjs');
 
@@ -378,6 +379,35 @@ async function main() {
   const others = accounts.filter((item) => item.uin !== account.uin);
   if (others.length) {
     log.info(`其它账号：${others.map((item) => item.uin).join(', ')}（切换运行 select-account.bat）`);
+  }
+
+  // 4.5 卸载非目标账号的 Hook 注入（SnowLuma 的 hookAutoLoad 会把所有 QQ 进程都注入）
+  const webuiConf = config.snowlumaWebui || {};
+  if (webuiConf.unloadOtherAccounts !== false) {
+    if (!webuiConf.password) {
+      if (others.length) log.info('未配置 SnowLuma WebUI 密码，跳过「自动卸载其它账号注入」（可在 setup.bat 里填）');
+    } else if (runtime.dryRun) {
+      log.info(`（dry-run）将登录 SnowLuma WebUI 并卸载非目标账号（${others.map((o) => o.uin).join('、') || '无'}）的 Hook 注入`);
+    } else {
+      const webuiPort = snowluma.webuiPort(paths.snowluma);
+      const result = await snowlumaWebui.unloadOtherAccounts({
+        port: webuiPort,
+        password: webuiConf.password,
+        keepUin: account.uin,
+      });
+      if (result.skipped) {
+        log.warn(`自动卸载其它账号注入未执行：${result.skipped}`);
+      } else {
+        if (result.unloaded.length) {
+          log.ok(`已卸载其它账号的 Hook 注入：${result.unloaded.map((x) => `${x.uin}(PID ${x.pid})`).join('、')}`);
+        } else if (others.length) {
+          log.info('没有可卸载的其它账号注入');
+        }
+        for (const failure of result.failed) {
+          log.warn(`卸载 ${failure.uin}(PID ${failure.pid}) 失败：${failure.error}`);
+        }
+      }
+    }
   }
 
   // 5. 同步配置 + 桥接

@@ -19,6 +19,8 @@ const EXAMPLE_FILE = path.join(ROOT, 'config.example.json');
 const DEFAULTS = {
   paths: { qq: '', snowluma: '', dsh: '', bridge: '' },
   defaults: { qqNumber: '', portBase: 3000 },
+  // 可选：SnowLuma WebUI 密码，用于启动后自动卸载非目标账号的 Hook 注入
+  snowlumaWebui: { password: '', unloadOtherAccounts: true },
 };
 
 function exists(p) {
@@ -36,6 +38,7 @@ function loadConfig() {
   return {
     paths: { ...DEFAULTS.paths, ...(raw.paths || {}) },
     defaults: { ...DEFAULTS.defaults, ...(raw.defaults || {}) },
+    snowlumaWebui: { ...DEFAULTS.snowlumaWebui, ...(raw.snowlumaWebui || {}) },
   };
 }
 
@@ -147,6 +150,20 @@ function ask(rl, question, defaultValue) {
   });
 }
 
+/**
+ * 问密码：不回显默认值（避免把已保存的密码打印到屏幕上）。
+ * 直接回车 = 保留已保存的值；没有已保存值则留空。
+ */
+function askPassword(rl, question, existingValue) {
+  const hint = existingValue ? '（已保存，直接回车保留）' : '（留空跳过）';
+  return new Promise((resolve) => {
+    rl.question(`${question}${hint}: `, (answer) => {
+      const text = answer.trim();
+      resolve(text === '' ? existingValue : text);
+    });
+  });
+}
+
 /** 首次运行向导：逐项确认路径 + 可选的固定 QQ 号。 */
 async function runWizard() {
   if (!process.stdin.isTTY) {
@@ -162,6 +179,12 @@ async function runWizard() {
     const dsh = await ask(rl, '③ DeepSeek Harness 程序路径（DeepSeek Harness.exe）', detected.dsh);
     const bridge = await ask(rl, '④ qq-bridge 仓库目录（含 start.bat）', detected.bridge);
     const qqNumber = await ask(rl, '⑤ 想固定接入的 QQ 号（留空 = 每次启动时询问/使用上次选择）', '');
+    const previous = loadConfig();
+    const webuiPassword = await askPassword(
+      rl,
+      '⑥ SnowLuma WebUI 密码（可选：填写后启动时会自动卸载其它 QQ 账号的 Hook 注入）',
+      previous?.snowlumaWebui?.password || '',
+    );
 
     const problems = [];
     if (!exists(qq)) problems.push(`QQ.exe 不存在：${qq}`);
@@ -172,7 +195,8 @@ async function runWizard() {
 
     const config = {
       paths: { qq, snowluma, dsh, bridge },
-      defaults: { qqNumber: /^\d{5,12}$/.test(qqNumber) ? qqNumber : '', portBase: 3000, consolePort: 3100 },
+      defaults: { qqNumber: /^\d{5,12}$/.test(qqNumber) ? qqNumber : '', portBase: 3000 },
+      snowlumaWebui: { password: webuiPassword, unloadOtherAccounts: true },
     };
     saveConfig(config);
 
