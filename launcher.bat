@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 setlocal
-title QQ 桥接
+title dafeiyu launcher
 pushd "%~dp0"
 
 where node >nul 2>nul

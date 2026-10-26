@@ -17,13 +17,13 @@ const { log } = require('./util.cjs');
 // 文件名故意和旧版手工快捷方式一致：重复执行会覆盖而不是堆一堆
 // 桌面只放一个图标：双击进入菜单（启动 / 换账号 / 预演 / 重建快捷方式）
 const SHORTCUT = {
-  file: 'QQ 桥接.lnk',
+  file: '大肥鱼启动器.lnk',
   target: 'launcher.bat',
-  description: 'QQ 桥接：启动 / 切换账号 / 预演',
+  description: '大肥鱼启动器：启动 / 切换 QQ 账号 / 预演',
 };
 
-// 旧版本创建过的两个图标，安装时顺手清掉，避免桌面上留一堆
-const LEGACY_SHORTCUTS = ['一键启动 QQ 桥接.lnk', '选择 QQ 账号.lnk'];
+// 旧版本创建过的图标，安装时顺手清掉，避免桌面上留一堆
+const LEGACY_SHORTCUTS = ['QQ 桥接.lnk', '一键启动 QQ 桥接.lnk', '选择 QQ 账号.lnk'];
 
 function runPowerShell(script, opts = {}) {
   // 必须先声明 UTF-8 输出编码：否则子进程把中文桌面路径（C:\Users\x\桌面）

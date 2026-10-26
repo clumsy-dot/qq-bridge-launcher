@@ -90,7 +90,7 @@ function showMenu() {
   return new Promise((resolve) => {
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
     console.log('');
-    console.log(c.bold('=== QQ 桥接启动器 ==='));
+    console.log(c.bold('=== 大肥鱼启动器 ==='));
     console.log(`  ${c.cyan('1')}) 启动（使用上次选择/配置的账号）  ${c.dim('← 直接回车')}`);
     console.log(`  ${c.cyan('2')}) 切换接入的 QQ 账号`);
     console.log(`  ${c.cyan('3')}) 预演：查看会修改哪些文件（不写入）`);
@@ -199,6 +199,8 @@ async function chooseAccount(accounts, config, args) {
 // ── 主流程 ──────────────────────────────────────────────────────────────────
 
 async function main() {
+  // 控制台窗口标题（与桌面图标名一致）
+  process.title = '大肥鱼启动器';
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {
     printHelp();
