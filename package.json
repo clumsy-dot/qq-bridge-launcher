@@ -1,0 +1,20 @@
+{
+  "name": "qq-bridge-launcher",
+  "version": "1.0.0",
+  "description": "Windows 一键启动 QQ / SnowLuma / DeepSeek Harness / qq-bridge，并支持多 QQ 账号的独立端口分配与账号切换",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "qq-bridge-launcher": "src/cli.cjs"
+  },
+  "scripts": {
+    "start": "node src/cli.cjs",
+    "setup": "node src/cli.cjs --init",
+    "list": "node src/cli.cjs --list",
+    "ask": "node src/cli.cjs --ask",
+    "check": "node --check src/cli.cjs && node --check src/config.cjs && node --check src/util.cjs && node --check src/dsh.cjs && node --check src/snowluma.cjs && node --check src/bridge.cjs"
+  }
+}

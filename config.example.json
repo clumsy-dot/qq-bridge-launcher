@@ -1,0 +1,12 @@
+{
+  "paths": {
+    "qq": "C:\\Program Files\\Tencent\\QQNT\\QQ.exe",
+    "snowluma": "C:\\Tools\\SnowLuma",
+    "dsh": "C:\\Program Files\\DeepSeek Harness\\DeepSeek Harness.exe",
+    "bridge": "C:\\Tools\\qq-bridge"
+  },
+  "defaults": {
+    "qqNumber": "",
+    "portBase": 3000
+  }
+}
