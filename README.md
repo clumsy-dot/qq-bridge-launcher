@@ -1,6 +1,6 @@
 # qq-bridge-launcher
 
-<p align="center"><img src="assets/preview.png" width="140" alt="icon"></p>
+<p align="center"><img src="https://gcore.jsdelivr.net/gh/clumsy-dot/qq-bridge-launcher@main/assets/preview.png" width="140" alt="icon"></p>
 
 > Windows 上把 **QQ → SnowLuma → DeepSeek Harness → qq-bridge** 这条链路一键拉起来的小工具，支持多 QQ 账号、自动分配 OneBot 端口、自动处理 DSH 随机端口。
 
