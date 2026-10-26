@@ -8,19 +8,6 @@ A tiny Windows launcher that boots the whole `QQ → SnowLuma → DeepSeek Harne
 
 ---
 
-## 它解决什么问题
-
-这套链路平时启动很麻烦，踩过的坑：
-
-| 坑 | 本工具的做法 |
-| --- | --- |
-| 四个组件有启动顺序（桥接要连 SnowLuma 的 OneBot 端口 + DSH 的 Web API） | 按依赖顺序自动启动，缺谁补谁 |
-| **DSH 桌面版每次启动的 Web 端口都是随机的**，而 qq-bridge 的 `dsh.baseUrl` 是写死的 | 从 DSH 进程反查当前端口，自动写回桥接配置 |
-| **多个 QQ 账号的 OneBot 默认都用 3000/3001**，一起启动必然 `EADDRINUSE` | 按 QQ 号升序自动分配独立端口：第 1 个 `3000/3001`、第 2 个 `3010/3011`… |
-| **SnowLuma 每次重启都要人工点「加载进程注入」**，账号才接入 OneBot | 打开 `hookAutoLoad`，启动时自动注入每个发现的 QQ 进程 |
-| QQ 客户端自重启（`--relaunch`）后，SnowLuma 进程还在但 OneBot 端口消失 | 检测到"进程在、端口没"就自动杀掉重启 |
-| 桥接的 token 自愈可能把连接切到另一个账号 | 把桥接**钉死**在选定账号的端口 + token 上（`followDiscoveredEndpoint: false`） |
-
 ## 部署时会修改什么（重要）
 
 **本工具运行时一定会改写 qq-bridge 和 SnowLuma 的配置文件** —— 这是它工作的方式，不是可选项：
