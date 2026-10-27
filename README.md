@@ -258,7 +258,7 @@ qq-bridge-launcher/
 ├─ config.example.json    # 配置模板（不含任何真实路径/QQ 号）
 ├─ assets/
 │  ├─ preview.png         # README 顶部展示图（384×384 原图）
-│  └─ icon.ico            # Windows 图标（16~256 多尺寸，由原图直接生成）
+│  └─ icon.ico            # Windows 图标（16~256 多尺寸，已去除白底/白边）
 ├─ src/
 │  ├─ cli.cjs             # 入口 & 编排 & 交互菜单
 │  ├─ config.cjs          # 配置读写 / 首次向导 / 路径自动探测
